@@ -2,6 +2,7 @@ package com.nequi.franquicias.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -17,5 +18,8 @@ public class Sucursal {
     private boolean active;
 
     @Column("idFranquicia")
-    private int idFranquicia;
+    private long idFranquicia;
+
+    @Transient
+    private Franquicia franquicia;
 }
