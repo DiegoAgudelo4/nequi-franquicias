@@ -2,6 +2,9 @@ package com.nequi.franquicias.controller;
 
 import com.nequi.franquicias.model.Producto;
 import com.nequi.franquicias.service.ProductoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/productos")
+@Tag(name = "Productos", description = "API para gestionar productos")
 public class ProductoController {
     private final ProductoService productoService;
 
@@ -20,6 +24,8 @@ public class ProductoController {
     }
 
     @GetMapping
+    @Operation(summary = "Obtener todos los productos", description = "Recupera la lista de productos en la bd.")
+    @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> obtenerProductos() {
         try {
             return productoService.obtenerTodos()
@@ -41,6 +47,8 @@ public class ProductoController {
     }
 
     @GetMapping("/activos")
+    @Operation(summary = "Obtener productos activos", description = "Recupera unicamente la lista de productos activos.")
+    @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> obtenerProductosActivos() {
         return productoService.obtenerTodos()
                 .filter(producto -> producto.isActive())
@@ -68,6 +76,8 @@ public class ProductoController {
 
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener producto por id", description = "Recupera el producto especificado con el Id")
+    @ApiResponse(responseCode = "200", description = "Producto obtenido correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> obtenerProducto(@PathVariable Long id) {
         return productoService.obtenerPorId(id)
                 .map(producto -> {
@@ -91,8 +101,9 @@ public class ProductoController {
         });
     }
 
-
     @PostMapping
+    @Operation(summary = "Crear un producto", description = "Crea un producto con los datos brindados")
+    @ApiResponse(responseCode = "201", description = "Producto creado correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> crearProducto(@RequestBody Producto producto) {
         try {
             return productoService.guardar(producto)
@@ -111,6 +122,8 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar un producto", description = "Elimina un producto dado el id")
+    @ApiResponse(responseCode = "200", description = "Producto eliminado correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> eliminarProducto(@PathVariable Long id) {
         return productoService.obtenerPorId(id)
                 .flatMap(producto -> {
@@ -139,6 +152,8 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Actualizar un producto", description = "Actualiza un producto dado el id y los nuevos datos del producto, debe mantener incluso los antiguos")
+    @ApiResponse(responseCode = "200", description = "Producto actualizado correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoActualizado) {
         return productoService.obtenerPorId(id)
                 .flatMap(producto -> {
