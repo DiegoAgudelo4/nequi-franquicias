@@ -138,4 +138,37 @@ public class ProductoController {
         });
     }
 
+    @PutMapping("/{id}")
+    public Mono<ResponseEntity<Map<String, Object>>> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoActualizado) {
+        return productoService.obtenerPorId(id)
+                .flatMap(producto -> {
+                    producto.setNombre(productoActualizado.getNombre());
+                    producto.setStock(productoActualizado.getStock());
+                    producto.setActive(productoActualizado.isActive());
+                    producto.setIdSucursal(productoActualizado.getIdSucursal());
+
+                    return productoService.guardar(producto)
+                            .map(updatedProducto -> {
+                                Map<String, Object> response = new HashMap<>();
+                                response.put("mensaje", "Sucursal actualizada correctamente");
+                                response.put("resultado", true);
+                                response.put("data", updatedProducto);
+                                return ResponseEntity.ok(response);
+                            });
+                })
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<>() {{
+                    put("mensaje", "Producto no encontrado");
+                    put("resultado", false);
+                    put("data", null);
+                }}))
+                .onErrorResume(e -> {
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("mensaje", "Error al actualizar producto: " + e.getMessage());
+                    errorResponse.put("resultado", false);
+                    errorResponse.put("data", null);
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
+                });
+    }
+
+
 }
