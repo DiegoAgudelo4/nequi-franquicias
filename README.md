@@ -1,30 +1,53 @@
 # Proyecto Backend para la gestion de Franquicias de Nequi
 
+## Requerimientos
+
+Se requiere construir un API para manejar una lista de franquicias. Una franquicia se
+compone por un nombre y un listado de sucursales y, a su vez, una sucursal está
+compuesta por un nombre y un listado de productos ofertados en la sucursal. Un producto
+se componente de un nombre y una cantidad de stock.
+### Criterios de aceptación
+1. El proyecto debe ser desarrollado en Spring Boot.
+2. Exponer endpoint para agregar una nueva franquicia.
+3. Exponer endpoint para agregar una nueva sucursal a una franquicia.
+4. Exponer endpoint para agregar un nuevo producto a una sucursal.
+5. Exponer endpoint para eliminar un nuevo producto a una sucursal.
+6. Exponer endpoint para modificar el stock de un producto.
+7. Exponer endpoint que permita mostrar cual es el producto que más stock tiene por sucursal
+para una franquicia puntual. Debe retornar un listado de productos que indique a que sucursal
+pertenece.
+8. Utilizar sistemas de persistencia de datos como Redis, MySql, MongoDB, Dynamo en algún
+proveedor de Nube. Queda abierto a libre escogencia.
+
+## Desarrollo del modelo de datos
+![ModeloDeDatosNequiFranquicias](https://github.com/user-attachments/assets/3635b0ee-4691-473f-a9a3-074c72b5cc4c)
+
 ## Herramientas usadas
 - Terraform BD: Infraestructura para crear una base de datos MySQL en un servicio RDS en AWS.
 - HeidiSQL: Para la gestión de la base de datos.
 - SQL WorkBench: Para ver el estado del servidor Base de datos.
 - SpringBoot: Codificación del backend (WebFlux, Swagger, loombok... etc.).
 - Docker: Para contener el proyecto y desplegarlo en cualquier entorno.
-
-### Creación de la BD en AWS con Terraform
-- terraform init
-- terraform plan
-- terraform apply
-
-### Ejecución del proyecto en local con Docker
-- docker build -t image-nequi-franquicias .
-- docker run -d -p 8080:8080 --name container-nequi-franquicias image-nequi-franquicias
-
-## Modelo de datos
-![ModeloDeDatosNequiFranquicias](https://github.com/user-attachments/assets/3635b0ee-4691-473f-a9a3-074c72b5cc4c)
+- AWS: RDS para BD. EC2 para alojar el API
 
 ## Documentación de la Api
-Se puede encontrar en la ruta /swagger-ui.html cuando se pone en marcha el servicio (Swagger)
+Se puede encontrar en la ruta [url]/swagger-ui.html cuando se pone en marcha el servicio
 
-## ¿Cómo ejecutar el proyecto? (ToDo)
+## ¿Cómo ejecutar el proyecto?
 ### Consideraciones
 - Tener AWS cli instalado y configurado
 - Tener Terraform Cli Instalado
 - Tener Docker instalado
 - Mucha fe
+
+### Creación de la BD en AWS con Terraform
+Si no se tiene una base de datos creada:
+En la carpeta aws-rds-mysql abrir una consola y ejecutar los siguientes comandos
+- terraform init
+- terraform plan
+- terraform apply
+
+### Ejecución del proyecto en local con Docker
+Con el servicio docker activo, en la carpeta raíz del proyecto abrir una consola y ejecutar los siguientes comandos:
+- docker build -t image-nequi-franquicias .
+- docker run -d -p 8080:8080 --name container-nequi-franquicias image-nequi-franquicias
