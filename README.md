@@ -31,7 +31,7 @@ proveedor de Nube. Queda abierto a libre escogencia.
 - AWS: RDS para BD. EC2 para alojar el API
 
 ## Documentación de la Api
-Se puede encontrar en la ruta [url]/swagger-ui.html cuando se pone en marcha el servicio
+Se puede encontrar en la ruta [url]/swagger-ui.html cuando se pone en marcha el servicio o directamente en el servicio desplegado en AWS (Sujeto a disponibilidad) http://54.242.196.147/swagger-ui/index.html
 
 ## ¿Cómo ejecutar el proyecto?
 ### Consideraciones
@@ -51,3 +51,4 @@ En la carpeta aws-rds-mysql abrir una consola y ejecutar los siguientes comandos
 Con el servicio docker activo, en la carpeta raíz del proyecto abrir una consola y ejecutar los siguientes comandos:
 - docker build -t image-nequi-franquicias .
 - docker run -d -p 8080:8080 --name container-nequi-franquicias image-nequi-franquicias
+Con esto queda desplegado el servicio en el puerto local 8080, para acceder a la documentación entras a localhost:8080/swagger-ui.html
