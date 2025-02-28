@@ -1,5 +1,6 @@
 package com.nequi.franquicias.controller;
 
+import com.nequi.franquicias.dto.sucursal.SucursalRequestDTO;
 import com.nequi.franquicias.model.Sucursal;
 import com.nequi.franquicias.service.SucursalService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -103,7 +104,7 @@ public class SucursalController {
     @PostMapping
     @Operation(summary = "Crear una sucursal", description = "Crea una sucursal con los datos brindados")
     @ApiResponse(responseCode = "201", description = "Sucursal creada correctamente")
-    public Mono<ResponseEntity<Map<String, Object>>> crearsucursal(@RequestBody Sucursal sucursal) {
+    public Mono<ResponseEntity<Map<String, Object>>> crearsucursal(@RequestBody SucursalRequestDTO sucursal) {
         try {
             return sucursalService.guardar(sucursal)
                     .map(suc -> ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
@@ -122,22 +123,18 @@ public class SucursalController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar una sucursal", description = "Elimina una sucursal dado el id")
-    @ApiResponse(responseCode = "200", description = "Sucursal eliminado correctamente")
+    @ApiResponse(responseCode = "200", description = "Sucursal eliminada correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> eliminarsucursal(@PathVariable Long id) {
-        return sucursalService.obtenerPorId(id)
-                .flatMap(sucursal -> {
-                    sucursal.setActive(false);
-                    return sucursalService.guardar(sucursal)
-                            .map(updatedsucursal -> {
-                                Map<String, Object> response = new HashMap<>();
-                                response.put("mensaje", "sucursal eliminada correctamente");
-                                response.put("resultado", true);
-                                response.put("data", updatedsucursal);
-                                return ResponseEntity.ok(response);
-                            });
+        return sucursalService.desactivarSucursal(id)
+                .map(sucursal -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("mensaje", "sucursal eliminada exitosamente");
+                    response.put("resultado", true);
+                    response.put("data", sucursal);
+                    return ResponseEntity.ok(response);
                 })
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<>() {{
-                    put("mensaje", "sucursal no encontrada");
+                    put("mensaje", "sucursal no eliminada");
                     put("resultado", false);
                     put("data", null);
                 }}))
@@ -153,24 +150,17 @@ public class SucursalController {
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar una sucursal", description = "Actualiza una sucursal dado el id y los nuevos datos de la sucursal, debe enviar incluso los antiguos")
     @ApiResponse(responseCode = "200", description = "Sucursal actualizada correctamente")
-    public Mono<ResponseEntity<Map<String, Object>>> actualizarSucursal(@PathVariable Long id, @RequestBody Sucursal sucursalActualizada) {
-        return sucursalService.obtenerPorId(id)
-                .flatMap(sucursal -> {
-                    sucursal.setNombre(sucursalActualizada.getNombre());
-                    sucursal.setActive(sucursalActualizada.isActive());
-                    sucursal.setIdFranquicia(sucursalActualizada.getIdFranquicia());
-
-                    return sucursalService.guardar(sucursal)
-                            .map(updatedSucursal -> {
-                                Map<String, Object> response = new HashMap<>();
-                                response.put("mensaje", "Sucursal actualizada correctamente");
-                                response.put("resultado", true);
-                                response.put("data", updatedSucursal);
-                                return ResponseEntity.ok(response);
-                            });
+    public Mono<ResponseEntity<Map<String, Object>>> actualizarSucursal(@PathVariable Long id, @RequestBody SucursalRequestDTO sucursalActualizada) {
+        return sucursalService.actualizarSucursal(id, sucursalActualizada)
+                .map(sucursal -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("mensaje", "Sucursal actualizada exitosamente");
+                    response.put("resultado", true);
+                    response.put("data", sucursal);
+                    return ResponseEntity.ok(response);
                 })
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<>() {{
-                    put("mensaje", "Sucursal no encontrada");
+                    put("mensaje", "Sucursal no actualizada");
                     put("resultado", false);
                     put("data", null);
                 }}))
@@ -182,5 +172,4 @@ public class SucursalController {
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
                 });
     }
-
 }

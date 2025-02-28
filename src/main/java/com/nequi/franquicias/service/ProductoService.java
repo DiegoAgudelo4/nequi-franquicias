@@ -52,21 +52,23 @@ public class ProductoService {
         if (dto.getStock() < 0) {
             return Mono.error(new ValidacionException("El stock no puede ser negativo"));
         }
-
-        if (sucursalRepository.findByIdSucursal(dto.getIdSucursal()) == null) {
-            return Mono.error(new ValidacionException("La sucursal no existe"));
+        if (!dto.isActive()) {
+            dto.setActive(true);
         }
 
-        Producto producto = productoMapper.toEntity(dto);
-        return productoRepository.save(producto)
-                .flatMap(savedProducto -> sucursalRepository.findById(savedProducto.getIdSucursal())
-                        .defaultIfEmpty(new Sucursal())
-                        .map(sucursal -> productoMapper.toResponseDTO(savedProducto, sucursal))
-                );
+        return sucursalRepository.findByIdSucursal(dto.getIdSucursal())
+                .switchIfEmpty(Mono.error(new ValidacionException("Sucursal [" + dto.getIdSucursal() + "] no existe.")))
+                .flatMap(sucursal -> {
+                    Producto producto = productoMapper.toEntity(dto);
+                    return productoRepository.save(producto)
+                            .map(savedProducto -> productoMapper.toResponseDTO(savedProducto, sucursal));
+                });
     }
+
 
     public Mono<ProductoResponseDTO> desactivarProducto(long id) {
         return productoRepository.findById(id)
+                .switchIfEmpty(Mono.error(new ValidacionException("Producto [" + id + "] no existe.")))
                 .flatMap(producto -> {
                     producto.setActive(false);
                     return productoRepository.save(producto)
@@ -79,9 +81,6 @@ public class ProductoService {
 
 
     public Mono<ProductoResponseDTO> actualizarProducto(Long id, ProductoRequestDTO productoActualizado) {
-        if (productoRepository.findById(id) == null) {
-            return Mono.error(new ValidacionException("El producto a actualizar no existe"));
-        }
 
         if (productoActualizado.getNombre() == null || productoActualizado.getNombre().isEmpty()) {
             return Mono.error(new ValidacionException("El nombre del producto es obligatorio"));
@@ -90,22 +89,20 @@ public class ProductoService {
             return Mono.error(new ValidacionException("El stock no puede ser negativo"));
         }
 
-        if (sucursalRepository.findByIdSucursal(productoActualizado.getIdSucursal()) == null) {
-            return Mono.error(new ValidacionException("La sucursal no existe"));
-        }
         return productoRepository.findById(id)
-                .flatMap(producto -> {
-                    producto.setNombre(productoActualizado.getNombre());
-                    producto.setStock(productoActualizado.getStock());
-                    producto.setActive(productoActualizado.isActive());
-                    producto.setIdSucursal(productoActualizado.getIdSucursal());
+                .switchIfEmpty(Mono.error(new ValidacionException("Producto [" + id + "] no existe.")))
+                .flatMap(producto ->
+                        sucursalRepository.findById(productoActualizado.getIdSucursal())
+                                .switchIfEmpty(Mono.error(new ValidacionException("Sucursal [" + productoActualizado.getIdSucursal() + "] no existe.")))
+                                .flatMap(sucursal -> {
+                                    producto.setNombre(productoActualizado.getNombre());
+                                    producto.setStock(productoActualizado.getStock());
+                                    producto.setActive(productoActualizado.isActive());
+                                    producto.setIdSucursal(productoActualizado.getIdSucursal());
 
-                    return productoRepository.save(producto)
-                            .flatMap(savedProducto -> sucursalRepository.findById(savedProducto.getIdSucursal())
-                                    .defaultIfEmpty(new Sucursal())
-                                    .map(sucursal -> productoMapper.toResponseDTO(savedProducto, sucursal))
-                            );
-                });
+                                    return productoRepository.save(producto)
+                                            .map(savedProducto -> productoMapper.toResponseDTO(savedProducto, sucursal));
+                                })
+                );
     }
-
 }

@@ -2,7 +2,6 @@ package com.nequi.franquicias.mapper;
 
 import com.nequi.franquicias.dto.producto.ProductoRequestDTO;
 import com.nequi.franquicias.dto.producto.ProductoResponseDTO;
-import com.nequi.franquicias.dto.sucursal.SucursalRequestDTO;
 import com.nequi.franquicias.model.Producto;
 import com.nequi.franquicias.model.Sucursal;
 import org.springframework.stereotype.Component;
@@ -17,12 +16,7 @@ public class ProductoMapper {
         dto.setStock(producto.getStock());
         dto.setActive(producto.isActive());
 
-        SucursalRequestDTO sucursalDTO = new SucursalRequestDTO();
-        sucursalDTO.setIdSucursal(sucursal.getIdSucursal());
-        sucursalDTO.setNombre(sucursal.getNombre());
-        sucursalDTO.setActive(sucursal.isActive());
-
-        dto.setSucursal(sucursalDTO);
+        dto.setSucursal(sucursal);
         return dto;
     }
 

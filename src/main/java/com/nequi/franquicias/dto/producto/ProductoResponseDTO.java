@@ -1,6 +1,6 @@
 package com.nequi.franquicias.dto.producto;
 
-import com.nequi.franquicias.dto.sucursal.SucursalRequestDTO;
+import com.nequi.franquicias.model.Sucursal;
 import lombok.Data;
 
 @Data
@@ -9,5 +9,5 @@ public class ProductoResponseDTO {
     private String nombre;
     private int stock;
     private boolean active;
-    private SucursalRequestDTO sucursal;
+    private Sucursal sucursal;
 }
