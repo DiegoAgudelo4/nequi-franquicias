@@ -34,7 +34,7 @@ public class ProductoService {
     }
 
     public Mono<ProductoResponseDTO> obtenerPorId(Long id) {
-        if (id == null){
+        if (id == null) {
             return Mono.error(new ValidacionException("Debe enviar un id"));
         }
         return productoRepository.findById(id)
@@ -75,19 +75,14 @@ public class ProductoService {
                                     .map(sucursal -> productoMapper.toResponseDTO(savedProducto, sucursal))
                             );
                 });
-//        return productoRepository.findById(id)
-//                .switchIfEmpty(Mono.error(new RecursoNoEncontradoException("Producto no encontrado")))
-//                .flatMap(producto -> sucursalRepository.findById(producto.getIdSucursal())
-//                        .defaultIfEmpty(new Sucursal())
-//                        .map(sucursal -> productoMapper.toResponseDTO(producto, sucursal))
-//                );
     }
 
 
     public Mono<ProductoResponseDTO> actualizarProducto(Long id, ProductoRequestDTO productoActualizado) {
-        if (id == null){
-            return Mono.error(new ValidacionException("Debe enviar un id"));
+        if (productoRepository.findById(id) == null) {
+            return Mono.error(new ValidacionException("El producto a actualizar no existe"));
         }
+
         if (productoActualizado.getNombre() == null || productoActualizado.getNombre().isEmpty()) {
             return Mono.error(new ValidacionException("El nombre del producto es obligatorio"));
         }

@@ -1,5 +1,6 @@
 package com.nequi.franquicias.controller;
 
+import com.nequi.franquicias.dto.franquicia.FranquiciaRequestDTO;
 import com.nequi.franquicias.model.Franquicia;
 import com.nequi.franquicias.service.FranquiciaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -105,11 +106,11 @@ public class FranquiciaController {
     @PostMapping
     @Operation(summary = "Crear una franquicia", description = "Crea una franquicia con los datos brindados")
     @ApiResponse(responseCode = "201", description = "Franquicia creada correctamente")
-    public Mono<ResponseEntity<Map<String, Object>>> crearfranquicia(@RequestBody Franquicia franquicia) {
+    public Mono<ResponseEntity<Map<String, Object>>> crearfranquicia(@RequestBody FranquiciaRequestDTO franquicia) {
         try {
             return franquiciaService.guardar(franquicia)
                     .map(franq -> ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                            "mensaje", "franquicia creado exitosamente",
+                            "mensaje", "franquicia creada exitosamente",
                             "resultado", true,
                             "data", franq
                     )));
@@ -126,20 +127,16 @@ public class FranquiciaController {
     @Operation(summary = "Eliminar una franquicia", description = "Elimina una franquicia dado el id")
     @ApiResponse(responseCode = "200", description = "Franquicia eliminada correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> eliminarfranquicia(@PathVariable Long id) {
-        return franquiciaService.obtenerPorId(id)
-                .flatMap(franquicia -> {
-                    franquicia.setActive(false);
-                    return franquiciaService.guardar(franquicia)
-                            .map(updatedfranquicia -> {
-                                Map<String, Object> response = new HashMap<>();
-                                response.put("mensaje", "franquicia eliminado correctamente");
-                                response.put("resultado", true);
-                                response.put("data", updatedfranquicia);
-                                return ResponseEntity.ok(response);
-                            });
+        return franquiciaService.desactivarFranquicia(id)
+                .map(franquicia -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("mensaje", "Franquicia eliminado exitosamente");
+                    response.put("resultado", true);
+                    response.put("data", franquicia);
+                    return ResponseEntity.ok(response);
                 })
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<>() {{
-                    put("mensaje", "franquicia no encontrado");
+                    put("mensaje", "Franquicia no eliminada");
                     put("resultado", false);
                     put("data", null);
                 }}))
@@ -155,23 +152,17 @@ public class FranquiciaController {
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar una franquicia", description = "Actualiza una franquicia dado el id y los nuevos datos de la franquicia, debe enviar incluso los antiguos")
     @ApiResponse(responseCode = "200", description = "Franquicia actualizada correctamente")
-    public Mono<ResponseEntity<Map<String, Object>>> actualizarFranquicia(@PathVariable Long id, @RequestBody Franquicia franquiciaActualizada) {
-        return franquiciaService.obtenerPorId(id)
-                .flatMap(franquicia -> {
-                    franquicia.setNombre(franquiciaActualizada.getNombre());
-                    franquicia.setActive(franquiciaActualizada.isActive());
-
-                    return franquiciaService.guardar(franquicia)
-                            .map(updatedFranquicia -> {
-                                Map<String, Object> response = new HashMap<>();
-                                response.put("mensaje", "Franquicia actualizada correctamente");
-                                response.put("resultado", true);
-                                response.put("data", updatedFranquicia);
-                                return ResponseEntity.ok(response);
-                            });
+    public Mono<ResponseEntity<Map<String, Object>>> actualizarFranquicia(@PathVariable Long id, @RequestBody FranquiciaRequestDTO franquiciaActualizada) {
+        return franquiciaService.actualizarfranquicia(id,franquiciaActualizada )
+                .map(franquicia -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("mensaje", "franquicia actualizada exitosamente");
+                    response.put("resultado", true);
+                    response.put("data", franquicia);
+                    return ResponseEntity.ok(response);
                 })
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<>() {{
-                    put("mensaje", "Franquicia no encontrada");
+                    put("mensaje", "franquicia no actualizada");
                     put("resultado", false);
                     put("data", null);
                 }}))

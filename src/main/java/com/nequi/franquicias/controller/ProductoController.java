@@ -134,7 +134,7 @@ public class ProductoController {
                     return ResponseEntity.ok(response);
                 })
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<>() {{
-                    put("mensaje", "Producto no encontrado");
+                    put("mensaje", "Producto no eliminada");
                     put("resultado", false);
                     put("data", null);
                 }}))
@@ -162,7 +162,7 @@ public class ProductoController {
                     return ResponseEntity.ok(response);
                 })
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<>() {{
-                    put("mensaje", "Producto no encontrado");
+                    put("mensaje", "Producto no actualizado");
                     put("resultado", false);
                     put("data", null);
                 }}))

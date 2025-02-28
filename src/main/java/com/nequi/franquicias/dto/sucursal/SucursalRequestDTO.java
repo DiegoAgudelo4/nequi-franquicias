@@ -1,7 +1,6 @@
 package com.nequi.franquicias.dto.sucursal;
 
 
-import com.nequi.franquicias.dto.franquicia.FranquiciaDTO;
 import lombok.Data;
 
 @Data

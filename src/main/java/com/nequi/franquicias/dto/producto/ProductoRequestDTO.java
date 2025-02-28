@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class ProductoRequestDTO {
-    private long idProducto;
     private String nombre;
     private int stock;
     private boolean active;
