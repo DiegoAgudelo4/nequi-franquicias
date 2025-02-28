@@ -24,7 +24,7 @@ public class ProductoController {
     }
 
     @GetMapping
-    @Operation(summary = "Obtener todos los productos", description = "Recupera la lista de productos en la bd.")
+    @Operation(summary = "Obtener todos los productos", description = "Recupera la lista de productos de la bd.")
     @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> obtenerProductos() {
         try {
@@ -148,7 +148,7 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar un producto", description = "Actualiza un producto dado el id y los nuevos datos del producto, debe mantener incluso los antiguos")
+    @Operation(summary = "Actualizar un producto", description = "Actualiza un producto dado el id y los nuevos datos del producto, debe enviar incluso los antiguos")
     @ApiResponse(responseCode = "200", description = "Producto actualizado correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> actualizarProducto(
             @PathVariable Long id,
