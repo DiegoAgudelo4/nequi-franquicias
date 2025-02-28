@@ -51,4 +51,5 @@ En la carpeta aws-rds-mysql abrir una consola y ejecutar los siguientes comandos
 Con el servicio docker activo, en la carpeta raíz del proyecto abrir una consola y ejecutar los siguientes comandos:
 - docker build -t image-nequi-franquicias .
 - docker run -d -p 8080:8080 --name container-nequi-franquicias image-nequi-franquicias
+
 Con esto queda desplegado el servicio en el puerto local 8080, para acceder a la documentación entras a localhost:8080/swagger-ui.html
