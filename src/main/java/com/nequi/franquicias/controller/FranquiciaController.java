@@ -2,6 +2,9 @@ package com.nequi.franquicias.controller;
 
 import com.nequi.franquicias.model.Franquicia;
 import com.nequi.franquicias.service.FranquiciaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/franquicias")
+@Tag(name = "Franquicias", description = "API para gestionar Franquicias")
 public class FranquiciaController {
     private final FranquiciaService franquiciaService;
 
@@ -20,6 +24,8 @@ public class FranquiciaController {
     }
 
     @GetMapping
+    @Operation(summary = "Obtener todos las franquicias", description = "Recupera la lista de franquicias de la bd.")
+    @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> obtenerfranquicias() {
         try {
             return franquiciaService.obtenerTodos()
@@ -41,6 +47,8 @@ public class FranquiciaController {
     }
 
     @GetMapping("/activos")
+    @Operation(summary = "Obtener franquicias activas", description = "Recupera unicamente la lista de franquicias activas.")
+    @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> obtenerfranquiciasActivos() {
         return franquiciaService.obtenerTodos()
                 .filter(franquicia -> franquicia.isActive())
@@ -68,6 +76,8 @@ public class FranquiciaController {
 
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener franquicia por id", description = "Recupera la franquicia especificada con el Id")
+    @ApiResponse(responseCode = "200", description = "Franquicia obtenido correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> obtenerfranquicia(@PathVariable Long id) {
         return franquiciaService.obtenerPorId(id)
                 .map(franquicia -> {
@@ -93,13 +103,15 @@ public class FranquiciaController {
 
 
     @PostMapping
+    @Operation(summary = "Crear una franquicia", description = "Crea una franquicia con los datos brindados")
+    @ApiResponse(responseCode = "201", description = "Franquicia creada correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> crearfranquicia(@RequestBody Franquicia franquicia) {
         try {
             return franquiciaService.guardar(franquicia)
-                    .map(prod -> ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                    .map(franq -> ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                             "mensaje", "franquicia creado exitosamente",
                             "resultado", true,
-                            "data", prod
+                            "data", franq
                     )));
         } catch (Exception e) {
             return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
@@ -111,6 +123,8 @@ public class FranquiciaController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar una franquicia", description = "Elimina una franquicia dado el id")
+    @ApiResponse(responseCode = "200", description = "Franquicia eliminada correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> eliminarfranquicia(@PathVariable Long id) {
         return franquiciaService.obtenerPorId(id)
                 .flatMap(franquicia -> {
@@ -139,6 +153,8 @@ public class FranquiciaController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Actualizar una franquicia", description = "Actualiza una franquicia dado el id y los nuevos datos de la franquicia, debe enviar incluso los antiguos")
+    @ApiResponse(responseCode = "200", description = "Franquicia actualizada correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> actualizarFranquicia(@PathVariable Long id, @RequestBody Franquicia franquiciaActualizada) {
         return franquiciaService.obtenerPorId(id)
                 .flatMap(franquicia -> {

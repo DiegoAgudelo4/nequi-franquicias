@@ -2,6 +2,9 @@ package com.nequi.franquicias.controller;
 
 import com.nequi.franquicias.model.Sucursal;
 import com.nequi.franquicias.service.SucursalService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/sucursales")
+@Tag(name = "Sucursales", description = "API para gestionar sucursales")
 public class SucursalController {
     private final SucursalService sucursalService;
 
@@ -20,6 +24,8 @@ public class SucursalController {
     }
 
     @GetMapping
+    @Operation(summary = "Obtener todas las sucursales", description = "Recupera la lista de sucursales de la bd.")
+    @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> obtenersucursales() {
         try {
             return sucursalService.obtenerTodos()
@@ -41,6 +47,8 @@ public class SucursalController {
     }
 
     @GetMapping("/activos")
+    @Operation(summary = "Obtener sucursales activas", description = "Recupera unicamente la lista de sucursales activas.")
+    @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> obtenersucursalesActivas() {
         return sucursalService.obtenerTodos()
                 .filter(sucursal -> sucursal.isActive())
@@ -67,6 +75,8 @@ public class SucursalController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener sucursal por id", description = "Recupera la sucursal especificada con el Id")
+    @ApiResponse(responseCode = "200", description = "Sucursal obtenido correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> obtenersucursal(@PathVariable Long id) {
         return sucursalService.obtenerPorId(id)
                 .map(sucursal -> {
@@ -91,6 +101,8 @@ public class SucursalController {
     }
 
     @PostMapping
+    @Operation(summary = "Crear una sucursal", description = "Crea una sucursal con los datos brindados")
+    @ApiResponse(responseCode = "201", description = "Sucursal creada correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> crearsucursal(@RequestBody Sucursal sucursal) {
         try {
             return sucursalService.guardar(sucursal)
@@ -109,6 +121,8 @@ public class SucursalController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar una sucursal", description = "Elimina una sucursal dado el id")
+    @ApiResponse(responseCode = "200", description = "Sucursal eliminado correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> eliminarsucursal(@PathVariable Long id) {
         return sucursalService.obtenerPorId(id)
                 .flatMap(sucursal -> {
@@ -137,6 +151,8 @@ public class SucursalController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Actualizar una sucursal", description = "Actualiza una sucursal dado el id y los nuevos datos de la sucursal, debe enviar incluso los antiguos")
+    @ApiResponse(responseCode = "200", description = "Sucursal actualizada correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> actualizarSucursal(@PathVariable Long id, @RequestBody Sucursal sucursalActualizada) {
         return sucursalService.obtenerPorId(id)
                 .flatMap(sucursal -> {
