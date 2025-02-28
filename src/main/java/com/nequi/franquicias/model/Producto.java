@@ -19,7 +19,7 @@ public class Producto {
     private boolean active;
 
     @Column("idSucursal")
-    private int idSucursal;
+    private long idSucursal;
 
     @Transient
     private Sucursal sucursal;

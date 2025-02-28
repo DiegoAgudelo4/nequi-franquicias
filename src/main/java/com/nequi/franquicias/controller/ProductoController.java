@@ -1,6 +1,6 @@
 package com.nequi.franquicias.controller;
 
-import com.nequi.franquicias.model.Producto;
+import com.nequi.franquicias.dto.producto.ProductoRequestDTO;
 import com.nequi.franquicias.service.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -65,13 +65,13 @@ public class ProductoController {
                     put("resultado", false);
                     put("data", null);
                 }}))
-            .onErrorResume(e -> {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("mensaje", "Error al obtener productos activos: " + e.getMessage());
-            errorResponse.put("resultado", false);
-            errorResponse.put("data", null);
-            return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
-        });
+                .onErrorResume(e -> {
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("mensaje", "Error al obtener productos activos: " + e.getMessage());
+                    errorResponse.put("resultado", false);
+                    errorResponse.put("data", null);
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
+                });
     }
 
 
@@ -92,19 +92,19 @@ public class ProductoController {
                     put("resultado", false);
                     put("data", null);
                 }}))
-            .onErrorResume(e -> {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("mensaje", "Error al obtener producto: " + e.getMessage());
-            errorResponse.put("resultado", false);
-            errorResponse.put("data", null);
-            return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
-        });
+                .onErrorResume(e -> {
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("mensaje", "Error al obtener producto: " + e.getMessage());
+                    errorResponse.put("resultado", false);
+                    errorResponse.put("data", null);
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
+                });
     }
 
     @PostMapping
     @Operation(summary = "Crear un producto", description = "Crea un producto con los datos brindados")
     @ApiResponse(responseCode = "201", description = "Producto creado correctamente")
-    public Mono<ResponseEntity<Map<String, Object>>> crearProducto(@RequestBody Producto producto) {
+    public Mono<ResponseEntity<Map<String, Object>>> crearProducto(@RequestBody ProductoRequestDTO producto) {
         try {
             return productoService.guardar(producto)
                     .map(prod -> ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
@@ -125,54 +125,44 @@ public class ProductoController {
     @Operation(summary = "Eliminar un producto", description = "Elimina un producto dado el id")
     @ApiResponse(responseCode = "200", description = "Producto eliminado correctamente")
     public Mono<ResponseEntity<Map<String, Object>>> eliminarProducto(@PathVariable Long id) {
-        return productoService.obtenerPorId(id)
-                .flatMap(producto -> {
-                    producto.setActive(false);
-                    return productoService.guardar(producto)
-                            .map(updatedProducto -> {
-                                Map<String, Object> response = new HashMap<>();
-                                response.put("mensaje", "Producto eliminado correctamente");
-                                response.put("resultado", true);
-                                response.put("data", updatedProducto);
-                                return ResponseEntity.ok(response);
-                            });
+        return productoService.desactivarProducto(id)
+                .map(producto -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("mensaje", "Producto eliminado exitosamente");
+                    response.put("resultado", true);
+                    response.put("data", producto);
+                    return ResponseEntity.ok(response);
                 })
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<>() {{
-                    put("mensaje", "Producto no encontrado");
+                    put("mensaje", "Producto no eliminado");
                     put("resultado", false);
                     put("data", null);
                 }}))
-            .onErrorResume(e -> {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("mensaje", "Error al eliminar producto: " + e.getMessage());
-            errorResponse.put("resultado", false);
-            errorResponse.put("data", null);
-            return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
-        });
+                .onErrorResume(e -> {
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("mensaje", "Error al eliminar producto: " + e.getMessage());
+                    errorResponse.put("resultado", false);
+                    errorResponse.put("data", null);
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
+                });
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar un producto", description = "Actualiza un producto dado el id y los nuevos datos del producto, debe enviar incluso los antiguos")
     @ApiResponse(responseCode = "200", description = "Producto actualizado correctamente")
-    public Mono<ResponseEntity<Map<String, Object>>> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoActualizado) {
-        return productoService.obtenerPorId(id)
-                .flatMap(producto -> {
-                    producto.setNombre(productoActualizado.getNombre());
-                    producto.setStock(productoActualizado.getStock());
-                    producto.setActive(productoActualizado.isActive());
-                    producto.setIdSucursal(productoActualizado.getIdSucursal());
-
-                    return productoService.guardar(producto)
-                            .map(updatedProducto -> {
-                                Map<String, Object> response = new HashMap<>();
-                                response.put("mensaje", "Sucursal actualizada correctamente");
-                                response.put("resultado", true);
-                                response.put("data", updatedProducto);
-                                return ResponseEntity.ok(response);
-                            });
+    public Mono<ResponseEntity<Map<String, Object>>> actualizarProducto(
+            @PathVariable Long id,
+            @RequestBody ProductoRequestDTO productoActualizado) {
+        return productoService.actualizarProducto(id, productoActualizado)
+                .map(producto -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("mensaje", "Producto actualizado exitosamente");
+                    response.put("resultado", true);
+                    response.put("data", producto);
+                    return ResponseEntity.ok(response);
                 })
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<>() {{
-                    put("mensaje", "Producto no encontrado");
+                    put("mensaje", "Producto no actualizado");
                     put("resultado", false);
                     put("data", null);
                 }}))
@@ -184,6 +174,5 @@ public class ProductoController {
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
                 });
     }
-
 
 }
