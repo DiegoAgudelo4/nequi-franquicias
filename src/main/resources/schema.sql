@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `producto` (
   `idProducto` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL DEFAULT 'nombre_example',
   `stock` int NOT NULL,
-  `active` tinyint NOT NULL,
+  `active` tinyint NOT NULL DEFAULT (1),
   `idSucursal` int NOT NULL,
   PRIMARY KEY (`idProducto`),
   KEY `FK_producto_sucursal` (`idSucursal`),

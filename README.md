@@ -49,7 +49,17 @@ En la carpeta aws-rds-mysql abrir una consola y ejecutar los siguientes comandos
 
 ### Ejecución del proyecto en local con Docker
 Con el servicio docker activo, en la carpeta raíz del proyecto abrir una consola y ejecutar los siguientes comandos:
+
+Ejecutar todo el proyecto con un solo comando
+- docker-compose up
+
+Construir imagen:
 - docker build -t image-nequi-franquicias .
-- docker run -d -p 8080:8080 --name container-nequi-franquicias image-nequi-franquicias
+
+Instanciar contenedor ajustando las variables de entorno
+- docker run -d -p 8080:8080 --name container-nequi-franquicias -e MYSQL_URL="r2dbc:mysql://[URL]/nequi_franquicias" -e MYSQL_USER="admin" -e MYSQL_PASSWORD="contrasenamuysegura123" image-nequi-franquicias
+
+o usando el archivo .env tambien sin olvidar ajustar las variables de entorno
+- docker run -d -p 8080:8080 --name container-nequi-franquicias --env-file .env image-nequi-franquicias
 
 Con esto queda desplegado el servicio en el puerto local 8080, para acceder a la documentación entras a localhost:8080/swagger-ui.html
