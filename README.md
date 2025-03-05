@@ -31,7 +31,7 @@ proveedor de Nube. Queda abierto a libre escogencia.
 - AWS: RDS para BD. EC2 para alojar el API
 
 ## Documentación de la Api
-Se puede encontrar en la ruta [url]/swagger-ui.html cuando se pone en marcha el servicio o directamente en el servicio desplegado en AWS (Sujeto a disponibilidad) http://54.242.196.147/swagger-ui/index.html
+Se puede encontrar en la ruta [url]/swagger-ui.html cuando se pone en marcha el servicio o directamente en el servicio desplegado en AWS (Sujeto a disponibilidad) [http://54.87.130.78:8080/swagger-ui/index.html](http://54.87.130.78:8080/swagger-ui/index.html)
 
 ## ¿Cómo ejecutar el proyecto?
 ### Consideraciones
